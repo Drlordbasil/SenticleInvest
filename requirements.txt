@@ -1,0 +1,9 @@
+The package requirements for the given Python program are as follows:
+
+- requests
+- bs4
+- transformers
+- sklearn
+- pandas
+- numpy
+- selenium
