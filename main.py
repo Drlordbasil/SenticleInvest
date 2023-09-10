@@ -42,7 +42,8 @@ class NewsScraper:
 
 class SentimentAnalyzer:
     def __init__(self):
-        self.model = pipeline("sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
+        self.model = pipeline(
+            "sentiment-analysis", model="nlptown/bert-base-multilingual-uncased-sentiment")
 
     def analyze_sentiment(self, text):
         sentiment = self.model(text)[0]['label']
@@ -64,7 +65,8 @@ class StockMarketPredictor:
         data['Month'] = data['Date'].dt.month
         data['Day'] = data['Date'].dt.day
         data['Weekday'] = data['Date'].dt.weekday
-        data['Target'] = np.where(data['Close'].shift(-1) > data['Close'], 'Buy', 'Sell')
+        data['Target'] = np.where(
+            data['Close'].shift(-1) > data['Close'], 'Buy', 'Sell')
 
         return data
 
@@ -75,7 +77,8 @@ class StockMarketPredictor:
         X = data[['Year', 'Month', 'Day', 'Weekday']]
         y = data['Target']
 
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.2, random_state=42)
 
         self.scaler.fit(X_train)
         X_train_scaled = self.scaler.transform(X_train)
@@ -102,7 +105,8 @@ class StockMarketPredictor:
         next_day_scaled = self.scaler.transform(next_day)
 
         predicted_movement = self.model.predict(next_day_scaled)
-        predicted_movement = self.label_encoder.inverse_transform(predicted_movement)
+        predicted_movement = self.label_encoder.inverse_transform(
+            predicted_movement)
 
         return predicted_movement
 
@@ -141,14 +145,17 @@ class Dashboard:
 
     def update_dashboard(self, portfolio, recommendations):
         for stock, action in recommendations.items():
-            element = self.driver.find_element(By.XPATH, f"//tr[contains(text(), '{stock}')]/td[3]")
+            element = self.driver.find_element(
+                By.XPATH, f"//tr[contains(text(), '{stock}')]/td[3]")
             quantity = int(element.text)
 
             if action == 'Buy':
-                element = self.driver.find_element(By.XPATH, f"//tr[contains(text(), '{stock}')]/td[4]")
+                element = self.driver.find_element(
+                    By.XPATH, f"//tr[contains(text(), '{stock}')]/td[4]")
                 price = float(element.text)
                 cost = price * quantity
-                cash_element = self.driver.find_element(By.XPATH, "//td[contains(text(), 'Cash')]/following-sibling::td")
+                cash_element = self.driver.find_element(
+                    By.XPATH, "//td[contains(text(), 'Cash')]/following-sibling::td")
                 cash = float(cash_element.text)
 
                 if cost <= cash:
@@ -160,10 +167,12 @@ class Dashboard:
                     cash_element.send_keys(str(cash))
 
             elif action == 'Sell':
-                element = self.driver.find_element(By.XPATH, f"//tr[contains(text(), '{stock}')]/td[4]")
+                element = self.driver.find_element(
+                    By.XPATH, f"//tr[contains(text(), '{stock}')]/td[4]")
                 price = float(element.text)
                 sale = price * quantity
-                cash_element = self.driver.find_element(By.XPATH, "//td[contains(text(), 'Cash')]/following-sibling::td")
+                cash_element = self.driver.find_element(
+                    By.XPATH, "//td[contains(text(), 'Cash')]/following-sibling::td")
                 cash = float(cash_element.text)
 
                 quantity -= 1
@@ -201,7 +210,8 @@ class UserFeedbackAnalyzer:
 
 class AutonomousInvestmentProgram:
     def __init__(self):
-        self.sources = ['https://www.example.com/news1', 'https://www.example.com/news2']
+        self.sources = ['https://www.example.com/news1',
+                        'https://www.example.com/news2']
         self.news_scraper = NewsScraper(self.sources)
         self.sentiment_analyzer = SentimentAnalyzer()
         self.stock_market_predictor = StockMarketPredictor('data.csv')
@@ -217,22 +227,28 @@ class AutonomousInvestmentProgram:
             # Perform sentiment analysis on news articles
             sentiments = []
             for article in articles:
-                sentiment = self.sentiment_analyzer.analyze_sentiment(article['content'])
+                sentiment = self.sentiment_analyzer.analyze_sentiment(
+                    article['content'])
                 sentiments.append(sentiment)
 
             # Predict stock market movements
-            historical_data = pd.read_csv(self.stock_market_predictor.data_file)
-            predicted_movement = self.stock_market_predictor.predict_market_movement(sentiments[-1], historical_data)
+            historical_data = pd.read_csv(
+                self.stock_market_predictor.data_file)
+            predicted_movement = self.stock_market_predictor.predict_market_movement(
+                sentiments[-1], historical_data)
 
             # Generate investment recommendations
             self.portfolio_manager.read_data()
-            recommendations = self.portfolio_manager.generate_recommendations(predicted_movement)
+            recommendations = self.portfolio_manager.generate_recommendations(
+                predicted_movement)
 
             # Update dashboard
-            self.dashboard.update_dashboard(self.portfolio_manager.portfolio, recommendations)
+            self.dashboard.update_dashboard(
+                self.portfolio_manager.portfolio, recommendations)
 
             # Collect user feedback
-            feedback = input("Please provide your feedback on the investment recommendations: ")
+            feedback = input(
+                "Please provide your feedback on the investment recommendations: ")
             self.feedback_analyzer.analyze_feedback(feedback, historical_data)
 
             # Sleep for 1 hour before running again
